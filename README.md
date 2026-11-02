@@ -72,6 +72,16 @@ git checkout v3          # or v1, v2
 cargo run --release
 ```
 
+## A second opinion
+
+HYPNOSYS was built with Claude, with ChatGPT in the loop. When it was done,
+ChatGPT had opinions.
+
+<p align="center">
+  <img src="docs/chatgpt-has-opinions.png" width="560"
+       alt="ChatGPT's review of HYPNOSYS. It says the trilogy's question changes from v1, 'Who is controlling me?', to v2, 'Who am I controlling?', to v3, 'Who created the thing doing the controlling?'. It tells Claude that 'Which one is me?' is the wrong question and 'Who gets to decide?' is the interesting one, and it ends: 'The real final boss was the SRE all along.'">
+</p>
+
 ## About this branch
 
 `main` holds no game code. It has this page, the [warning](WARNING.md), the
