@@ -35,14 +35,14 @@ jobs:
       matrix:
         journey: [v1.0, v2.0, v3.0]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with: { ref: "${{ matrix.journey }}", path: game }
       - run: sudo apt-get update && sudo apt-get install -y libasound2-dev libx11-dev libxi-dev libgl1-mesa-dev
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo build --release --locked --manifest-path game/Cargo.toml
       - run: packaging/deb.sh "${{ matrix.journey }}" game/target/release/hypnosys dist
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with: { name: "deb-${{ matrix.journey }}", path: dist/* }
 
   rpm:
@@ -54,15 +54,15 @@ jobs:
         journey: [v1.0, v2.0, v3.0]
     steps:
       - run: dnf install -y gcc git rpm-build alsa-lib-devel libX11-devel libXi-devel mesa-libGL-devel
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with: { ref: "${{ matrix.journey }}", path: game }
       - run: |
           curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
       - run: cargo build --release --locked --manifest-path game/Cargo.toml
       - run: packaging/rpm.sh "${{ matrix.journey }}" game/target/release/hypnosys dist
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with: { name: "rpm-${{ matrix.journey }}", path: dist/* }
 
   arch:
@@ -74,8 +74,8 @@ jobs:
         journey: [v1.0, v2.0, v3.0]
     steps:
       - run: pacman -Syu --noconfirm base-devel git rust alsa-lib libx11 libxi libglvnd
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with: { ref: "${{ matrix.journey }}", path: game }
       - run: cargo build --release --locked --manifest-path game/Cargo.toml
       - name: Package (makepkg won't run as root)
@@ -83,7 +83,7 @@ jobs:
           useradd -m builder
           chown -R builder .
           su builder -c 'packaging/arch.sh "${{ matrix.journey }}" game/target/release/hypnosys dist'
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with: { name: "arch-${{ matrix.journey }}", path: dist/* }
 
   windows:
@@ -93,8 +93,8 @@ jobs:
       matrix:
         journey: [v1.0, v2.0, v3.0]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with: { ref: "${{ matrix.journey }}", path: game }
       - uses: dtolnay/rust-toolchain@stable
       # Linked as a GUI app so no console window opens behind the game. The flags
@@ -108,7 +108,7 @@ jobs:
           -C link-arg=/SUBSYSTEM:WINDOWS -C link-arg=/ENTRY:mainCRTStartup
       - shell: bash
         run: packaging/windows.sh "${{ matrix.journey }}" game/target/release/hypnosys.exe dist
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with: { name: "windows-${{ matrix.journey }}", path: dist/* }
 
   macos:
@@ -118,8 +118,8 @@ jobs:
       matrix:
         journey: [v1.0, v2.0, v3.0]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with: { ref: "${{ matrix.journey }}", path: game }
       - uses: dtolnay/rust-toolchain@stable
         with: { targets: "aarch64-apple-darwin,x86_64-apple-darwin" }
@@ -131,7 +131,7 @@ jobs:
           game/target/aarch64-apple-darwin/release/hypnosys
           game/target/x86_64-apple-darwin/release/hypnosys
           dist
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with: { name: "macos-${{ matrix.journey }}", path: dist/* }
 
   release:
@@ -142,8 +142,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with: { path: dist }
       - name: One release per journey
         env:
