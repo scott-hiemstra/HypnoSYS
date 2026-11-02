@@ -2,6 +2,9 @@
 
 *What consciousness feels like when reality gets a little weird.*
 
+> **[Download journey 2 (v2.0)](https://github.com/scott-hiemstra/HypnoSYS/releases/tag/v2.0)**: packages for Debian/Ubuntu, RHEL, Arch, Windows and macOS.  
+> [All three journeys](https://github.com/scott-hiemstra/HypnoSYS) · ⚠️ [Read the warning before you play](https://github.com/scott-hiemstra/HypnoSYS/blob/main/WARNING.md)
+
 A short (about five minutes) guided-trance game written in Rust with
 [macroquad](https://macroquad.rs). The game guides you down into a hypnotic
 state. The better you follow each suggestion, the deeper you go, and the
