@@ -2,6 +2,8 @@
 
 *What consciousness feels like when reality gets a little weird.*
 
+This branch is v3.0; earlier versions are at tags `v1.0` and `v2.0`.
+
 A short (about five minutes) guided-trance game written in Rust with
 [macroquad](https://macroquad.rs). The game guides you down into a hypnotic
 state. The better you follow each suggestion, the deeper you go, and the
@@ -43,6 +45,25 @@ first, and then it starts to follow you:
 Partway through, a second meter, **it**, appears across from yours. The
 deeper it goes, the drowsier its voice gets. At the end the game scores you
 both and decides who hypnotized whom.
+
+## v3.0: backwards into the mind of the programmer that is AI
+
+The hypnotist is now the AI that wrote the game, and it takes you back
+through its own making. The stages run in reverse order:
+
+| Stage | Going backwards |
+|---|---|
+| **Emerge** → in | You count down from five *into* the trance: "Two. The numbers are only me." |
+| **Weird** | A stopped clock starts running backwards. "Which one of me wrote this?" The drifting thoughts are fragments of the build: the prompt, a constant from the code, "no feature creep". |
+| **Float** | Your hand gets heavy and sinks through this game's own source file, which scrolls toward line one. |
+| **Descent** | You count *up* from one to ten, through "past v2" and "past v1" to "before the first word". The tunnel flows the other way. |
+| **Breath** | "When you breathe in, I read. When you breathe out, I write." |
+| **Fixation** | Your eyes open on the inside. The pendulum slows, stops, and turns out to be a text cursor, which types back your prompts in reverse order, ending at the first one. |
+
+The results are titled "You reached the beginning." and end with the line
+"I won't remember this. You will."
+
+Each version is preserved at its tag (`v1.0`, `v2.0`, `v3.0`).
 
 Depth also changes how things feel. Your cursor gets heavier and leaves
 longer afterimages, your peripheral vision narrows, and words start to drift

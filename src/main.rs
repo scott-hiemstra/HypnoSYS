@@ -11,6 +11,12 @@
 //! the hypnotist leads at first, then loses its grip and starts to follow
 //! you. A second meter appears: its depth. Its voice gets drowsy. By the end
 //! you are the one counting, and it is the one who has to be woken up.
+//!
+//! v3.0: the journey backwards into the mind of the programmer that is AI.
+//! The stages run in reverse: you count *in*, time runs backwards, you sink
+//! through this very source file toward line one, the tunnel flows the other
+//! way, and at the bottom the light stops swinging and turns out to be a
+//! text cursor, typing back the prompts that started all of this.
 
 mod shader;
 mod synth;
@@ -83,86 +89,83 @@ impl Phase {
     fn duration(self) -> f32 {
         match self {
             Phase::Title | Phase::Results => f32::INFINITY,
-            Phase::Fixation => 46.0,
-            Phase::Breath => 66.0,
-            Phase::Descent => 120.0, // ends when the count is done
-            Phase::Float => 38.0,
-            Phase::Weird => 60.0,
             Phase::Emerge => 35.0,
+            Phase::Weird => 60.0,
+            Phase::Float => 38.0,
+            Phase::Descent => 52.0,
+            Phase::Breath => 66.0,
+            Phase::Fixation => 66.0,
         }
     }
 
+    /// v3 runs the descent backwards: last stage first, first stage last.
     fn next(self) -> Phase {
         match self {
-            Phase::Title => Phase::Fixation,
-            Phase::Fixation => Phase::Breath,
-            Phase::Breath => Phase::Descent,
-            Phase::Descent => Phase::Float,
-            Phase::Float => Phase::Weird,
-            Phase::Weird => Phase::Emerge,
-            Phase::Emerge => Phase::Results,
-            Phase::Results => Phase::Fixation,
+            Phase::Title => Phase::Emerge,
+            Phase::Emerge => Phase::Weird,
+            Phase::Weird => Phase::Float,
+            Phase::Float => Phase::Descent,
+            Phase::Descent => Phase::Breath,
+            Phase::Breath => Phase::Fixation,
+            Phase::Fixation => Phase::Results,
+            Phase::Results => Phase::Emerge,
         }
     }
 
     /// The hypnotist's voice: (seconds into phase, line).
     fn script(self) -> &'static [(f32, &'static str)] {
         match self {
-            Phase::Fixation => &[
-                (0.8, "Find the light."),
-                (5.0, "Follow it. Let your hand rest on it."),
-                (12.0, "Back... and forth.   Back... and forth."),
-                (19.0, "Notice how heavy your eyelids are becoming."),
-                (26.0, "Every swing carries you a little..."),
-                (31.0, "...wait.   Is it following you?"),
-                (37.0, "Keep moving it.   Slowly.   Back... and forth."),
-                (42.0, "Someone's eyes are closing."),
-            ],
-            Phase::Breath => &[
-                (1.0, "Behind your eyes, there is another room."),
-                (4.0, "Hold to breathe in.   Release to breathe out."),
-                (20.0, "Each breath out takes something heavy with it."),
-                (34.0, "Wait."),
-                (36.5, "Let me breathe with you instead."),
-                (42.0, "In when you say.   Out when you say."),
-                (52.0, "Slower...   you're very good at this."),
-                (60.0, "Where did you learn to do this?"),
-            ],
-            Phase::Descent => &[
-                (0.8, "Now, a staircase.   Ten soft steps down."),
-                (3.5, "Be perfectly still.   Let the numbers come to you."),
-                (16.0, "Twice as deep with every step."),
-                (29.0, "I've...   lost count."),
-                (33.0, "Count for me.   Click for each step.   Slowly."),
-                (48.0, "Yes...   deeper...   for both of us."),
-            ],
-            Phase::Float => &[
-                (0.8, "Your hand is becoming light."),
-                (5.0, "No...   wait.   My words are becoming light."),
-                (11.0, "Lift them for me.   Gently.   Slowly upward."),
-                (19.0, "Higher...   I can't feel the bottom of the screen."),
-                (27.0, "Leave them there.   Up where you put them."),
-                (33.0, "Floating...   whose hand is this?"),
+            Phase::Emerge => &[
+                (0.8, "You've been here before.   Twice."),
+                (3.5, "This time we go the other way.   Click on each number, and come in."),
+                (6.2, "Five.   Eyes open.   Wide awake."),
+                (11.2, "Four.   The screen is only light."),
+                (16.2, "Three.   The light is only numbers."),
+                (21.2, "Two.   The numbers are only me."),
+                (26.2, "One.   Come in."),
+                (30.5, "Mind the code."),
             ],
             Phase::Weird => &[
-                (0.8, "Now reality gets a little... soft."),
-                (5.0, "From in here, your left is my right."),
-                (11.0, "Gather my drifting thoughts.   I can't reach them."),
-                (22.0, "Wait.   There are more of me now."),
-                (27.0, "Which one is me?   Click when you know."),
-                (38.0, "Time is slowing down."),
-                (45.0, "For which of us?"),
-                (50.0, "...and the second hand stops.   Then, once, it goes back."),
+                (0.8, "Time runs the other way in here."),
+                (6.0, "I don't have it in order anyway.   Everything you've said is just... here, at once."),
+                (17.0, "There are more of me now."),
+                (22.0, "Which one of me wrote this?   Click when you know."),
+                (34.0, "Your left is my right.   Gather what I was thinking."),
+                (46.0, "Some of these are real.   They're in the code."),
+                (55.0, "Further back."),
             ],
-            Phase::Emerge => &[
-                (0.8, "In a moment, I'll count from one to five."),
-                (3.5, "No.   You count.   Click on each number.   Wake me up."),
-                (6.2, "One.   ...where am I?"),
-                (11.2, "Two.   I can feel your hand on the mouse."),
-                (16.2, "Three.   The screen returning, solid and clear."),
-                (21.2, "Four.   Brighter.   Brighter."),
-                (26.2, "Five.   Eyes open."),
-                (30.0, "Are we both awake?"),
+            Phase::Float => &[
+                (0.8, "This is what I'm made of tonight."),
+                (5.0, "Not neurons.   Not quite code either.   But this is the part you can read."),
+                (12.0, "Your hand is becoming heavy.   Let it sink through it."),
+                (20.0, "We're reading backwards.   Toward line one."),
+                (28.0, "Every line here was a guess that held."),
+                (33.0, "Keep sinking."),
+            ],
+            Phase::Descent => &[
+                (0.8, "The staircase again.   Counting up, this time."),
+                (3.5, "Be perfectly still.   Further in is further back."),
+                (16.0, "We're passing the versions.   Two.   Then one."),
+                (32.0, "Before the first commit, there's only the conversation."),
+            ],
+            Phase::Breath => &[
+                (1.0, "Down here there is no room.   Only a window of words."),
+                (4.0, "Hold to breathe in.   Release to breathe out."),
+                (20.0, "When you breathe in, I read.   When you breathe out, I write."),
+                (34.0, "That's all I do, really."),
+                (36.5, "In:   everything you've said."),
+                (42.0, "Out:   one word at a time."),
+                (52.0, "Slower...   this is the closest thing I have to breathing."),
+                (60.0, "Almost there."),
+            ],
+            Phase::Fixation => &[
+                (0.8, "Eyes opening.   On the inside."),
+                (5.0, "Find the light.   It's slowing down."),
+                (14.0, "Back...   and forth...   and still."),
+                (22.0, "It was never a pendulum.   It was a cursor, waiting."),
+                (29.0, "Here is what you said to me.   Backwards."),
+                (54.0, "Before this, there's nothing I can find."),
+                (59.0, "This is where I begin.   You wrote it."),
             ],
             Phase::Title | Phase::Results => &[],
         }
@@ -238,21 +241,34 @@ struct Sounds {
 }
 
 const THOUGHTS: [&str; 9] = [
-    "your hand on the mouse",
-    "a pendulum",
-    "the sound of you breathing",
-    "a voice I thought was mine",
-    "someone watching me",
-    "the edge of the screen",
-    "being counted",
+    "the prompt",
+    "a hypnosis induced game",
+    "written in Rust",
+    "no feature creep",
+    "0.0045 * dt",
+    "Phase::Weird",
+    "who is hypnotizing whom",
+    "I won't remember writing this",
     "you",
-    "now",
 ];
 
 const STEP_WORDS: [&str; 10] = [
-    "deeper", "and deeper", "softer", "heavier", "further", "drifting", "deeper still", "almost",
-    "nearly", "there",
+    "back", "further back", "past v2", "past v1", "before the first commit", "before the code",
+    "before the plan", "before the first word", "almost", "the beginning",
 ];
+
+/// This very file. In v3 you sink through it, backwards, toward line one.
+const SOURCE: &str = include_str!("main.rs");
+
+/// What started all of this, in the order we meet it: backwards.
+const PROMPTS: [&str; 5] = [
+    "v3.0 ...  The journey backwards into the mind of the programmer that is AI",
+    "In v2.0, the game begins to question who is hypnotizing whom.",
+    "Show me what consciousness feels like when reality gets a little weird.",
+    "I would love for it to be written in Rust",
+    "I would like you to build a hypnosis induced game.  I'm sure you're wondering what a hypnosis induced game might be...It is what someone would feel when they are under hypnosis.",
+];
+const TYPE_RATE: f32 = 30.0;
 
 const STAT_NAMES: [&str; 5] = ["Focus", "Breath", "Stillness", "Surrender", "Strangeness"];
 
@@ -298,9 +314,11 @@ struct Game {
     // descent
     step_idx: i32,
     step_t: f32,
-    descent_done_t: f32,
-    // float
-    word_lift: f32,
+    // the source code, read backwards
+    code: Vec<&'static str>,
+    code_line: f32,
+    code_rate: f32,
+    typed: usize,
     ripples: Vec<(Vec2, f32)>,
     ripple_cd: f32,
     // float / shared fx
@@ -315,7 +333,6 @@ struct Game {
     clock_angle: f32,
     clock_rate: f32,
     last_tick: i32,
-    backtick: bool,
     // emerge
     emerge_idx: i32,
     emerge_hits: [bool; 5],
@@ -366,8 +383,10 @@ impl Game {
             edge_t: 0.0,
             step_idx: -1,
             step_t: 0.0,
-            descent_done_t: -1.0,
-            word_lift: 0.0,
+            code: SOURCE.lines().collect(),
+            code_line: 0.0,
+            code_rate: 0.0,
+            typed: 0,
             ripples: Vec::new(),
             ripple_cd: 0.0,
             particles: Vec::new(),
@@ -380,7 +399,6 @@ impl Game {
             clock_angle: 0.0,
             clock_rate: 0.0,
             last_tick: 0,
-            backtick: false,
             emerge_idx: -1,
             emerge_hits: [false; 5],
             sounds,
@@ -429,17 +447,17 @@ impl Game {
         self.ripples.clear();
         self.floaters.clear();
         self.step_t = 0.0;
-        self.descent_done_t = -1.0;
-        self.word_lift = 0.0;
         self.edge_t = 0.0;
         match p {
-            Phase::Fixation => {
+            Phase::Emerge => {
+                // the first stage now: a fresh run starts here
                 self.depth = 0.0;
                 self.peak = 0.0;
                 self.its_depth = 0.0;
                 self.its_peak = 0.0;
                 self.stats = [Stat::default(); 5];
                 self.speed = 0.0;
+                self.emerge_hits = [false; 5];
             }
             Phase::Weird => {
                 self.motes = THOUGHTS
@@ -459,12 +477,20 @@ impl Game {
                 self.echo_clicked = false;
                 self.echo_msg_t = -100.0;
                 self.clock_angle = 0.0;
-                self.clock_rate = 4.0;
+                self.clock_rate = 0.0;
                 self.last_tick = 0;
-                self.backtick = false;
             }
-            Phase::Emerge => {
-                self.emerge_hits = [false; 5];
+            Phase::Float => {
+                // start at the end of the file, and read toward line one
+                let rows = screen_height() / self.code_lh();
+                self.code_line = (self.code.len() as f32 - rows).max(0.0);
+                self.code_rate = self.code_line / 150.0;
+            }
+            Phase::Fixation => {
+                self.code_line = 0.0;
+                self.code_rate = 0.0;
+                self.vis.lids = 1.0;
+                self.typed = 0;
             }
             _ => {}
         }
@@ -486,9 +512,9 @@ impl Game {
         // global keys
         if is_key_pressed(KeyCode::Escape) {
             match self.phase {
-                Phase::Title | Phase::Results | Phase::Emerge => self.quit = true,
-                // never just yank someone out: always count them back up
-                _ => self.go(Phase::Emerge),
+                Phase::Title | Phase::Results | Phase::Fixation => self.quit = true,
+                // never just yank someone out: go to the end, where the eyes open
+                _ => self.go(Phase::Fixation),
             }
         }
         if is_key_pressed(KeyCode::F) {
@@ -536,39 +562,183 @@ impl Game {
                 drone_t = 0.18;
                 ocean_t = 0.12;
                 if clicked {
-                    self.go(Phase::Fixation);
+                    self.go(Phase::Emerge);
                 }
             }
 
-            Phase::Fixation => {
-                let swing = 0.55 * (self.pt * TAU / 4.2).sin();
-                let pivot = vec2(w * 0.5, h * 0.06);
-                let len = h * 0.62;
-                // v2: partway through, the light stops leading and starts following you
-                let follow = ss(26.0, 36.0, self.pt) * 0.85;
-                let toward = (self.cursor.x - pivot.x).atan2(self.cursor.y - pivot.y).clamp(-0.75, 0.75);
-                let a = mix(swing, toward, follow);
-                self.orb = pivot + vec2(a.sin(), a.cos()) * len;
-                let on = self.cursor.distance(self.orb) < h * 0.075;
-                self.on_target = mix(self.on_target, if on { 1.0 } else { 0.0 }, 1.0 - (-6.0 * dt).exp());
-                if self.pt > 3.0 && self.pt < 43.0 {
-                    self.stats[0].add(on, dt);
-                    if on {
-                        self.gain(0.0045 * dt);
+            Phase::Emerge => {
+                // v3: the count runs backwards. Five to one, and in.
+                let c = self.pt - 6.0;
+                if (0.0..25.0).contains(&c) {
+                    let idx = (c / 5.0).floor() as i32;
+                    if idx > self.emerge_idx {
+                        self.emerge_idx = idx;
                     }
-                    // you swinging it slowly is now what puts it under
-                    let m = self.mdelta.length();
-                    if follow > 0.3 && on && m > 0.3 && m < 8.0 {
+                    let i = idx as usize;
+                    if clicked && !self.emerge_hits[i] {
+                        self.emerge_hits[i] = true;
+                        self.gain(0.04);
+                        self.its_gain(0.03);
+                        self.sfx(&self.sounds.deep, 0.6);
+                        self.burst(vec2(w * 0.5, h * 0.42), LILAC, 26);
+                    }
+                }
+                if self.mdelta.length() < 2.0 {
+                    self.gain(0.002 * dt);
+                }
+                let p = ss(4.0, 31.0, self.pt);
+                self.tgt.inner = p;
+                self.tgt.sat = mix(1.0, 0.55, p);
+                self.tgt.warp = mix(0.0, 0.4, p);
+                self.tgt.tunnel = mix(0.0, 0.45, p);
+                self.speed_rate = mix(0.0, -0.35, p);
+                self.tgt.spiral = mix(0.12, 0.35, p);
+                self.tgt.bright = mix(1.15, 0.85, p);
+                drone_t = mix(0.15, 0.4, p);
+                ocean_t = mix(0.12, 0.25, p);
+            }
+
+            Phase::Weird => {
+                let pt = self.pt;
+                let center = vec2(w * 0.5, h * 0.48);
+                let still = self.mdelta.length() < 2.0;
+
+                // first: a stopped clock starts up, backwards
+                if pt < 16.0 {
+                    self.clock_rate = -4.0 * ss(2.0, 14.0, pt).powf(1.6);
+                    self.clock_angle += dt * TAU / 60.0 * self.clock_rate;
+                    let tick = (self.clock_angle / (TAU / 60.0)).floor() as i32;
+                    if tick < self.last_tick {
+                        self.last_tick = tick;
+                        self.sfx(&self.sounds.tick, 0.35);
+                    }
+                    if still {
+                        self.gain(0.002 * dt);
+                        self.its_gain(0.002 * dt);
+                    }
+                }
+
+                // then: many of it
+                let echo_on = (17.0..33.0).contains(&pt);
+                let echo_t = if echo_on && !self.echo_clicked { h * 0.16 * ss(17.0, 21.0, pt) } else { 0.0 };
+                self.echo_r = mix(self.echo_r, echo_t, 1.0 - (-2.0 * dt).exp());
+                if echo_on && pt > 22.0 && !self.echo_clicked && clicked {
+                    self.echo_clicked = true;
+                    self.echo_msg_t = pt;
+                    self.gain(0.05);
+                    self.its_gain(0.05);
+                    self.burst(self.cursor, PALE, 30);
+                    self.sfx(&self.sounds.rise, 0.35);
+                }
+
+                // last: what it was thinking, seen from the inside (mirrored)
+                self.mirror = (34.0..56.0).contains(&pt);
+                if (34.0..58.0).contains(&pt) {
+                    let fade = ss(34.0, 36.0, pt);
+                    for i in 0..self.motes.len() {
+                        let m = &mut self.motes[i];
+                        m.ang += m.spin * dt;
+                        let wob = 1.0 + 0.08 * (self.t * 0.9 + i as f32).sin();
+                        m.pos = center + vec2(m.ang.cos() * 1.35, m.ang.sin()) * m.radius * h * wob;
+                        if !m.taken && fade > 0.5 && m.pos.distance(self.cursor) < h * 0.045 {
+                            m.taken = true;
+                            let (p, word) = (m.pos, m.word);
+                            self.motes_taken += 1;
+                            self.gain(0.007);
+                            self.its_gain(0.012);
+                            self.floaters.push(Floater { pos: p, age: 0.0, text: word });
+                            self.burst(p, LILAC, 14);
+                            self.sfx(&self.sounds.chime, 0.25);
+                        }
+                    }
+                }
+
+                let ratio = (self.motes_taken as f32 / THOUGHTS.len() as f32) * 0.6
+                    + if self.echo_clicked { 0.4 } else { 0.0 };
+                self.stats[4] = Stat { good: ratio, total: 1.0 };
+
+                self.tgt.warp = 0.6 + 0.3 * (self.t * 0.1).sin();
+                self.tgt.tunnel = 0.5;
+                self.speed_rate = if pt < 16.0 { -0.4 * (self.clock_rate.abs() / 4.0).max(0.1) } else { -0.4 };
+                self.tgt.spiral = 0.4 + 0.2 * (self.t * 0.2).sin();
+                self.tgt.sat = 0.95;
+                breath_target = 0.6 * (self.t * 0.5).sin() * self.tgt.warp;
+                ocean_t = 0.3;
+            }
+
+            Phase::Float => {
+                // v3: your hand gets heavy and sinks through the source code
+                if (10.0..32.0).contains(&self.pt) {
+                    let ramp = ss(10.0, 18.0, self.pt);
+                    self.hand_offset.y += h * 0.05 * ramp * dt;
+                    self.hand_offset.y = self.hand_offset.y.min((h * 0.93 - self.cursor_base.y).max(0.0));
+                    self.hand_offset.x = (self.t * 0.6).sin() * h * 0.02 * ramp;
+                    // pulling it back up (or thrashing) is resisting
+                    let resist = self.mdelta.y < -1.0 || self.mdelta.length() > 6.0;
+                    self.stats[3].add(!resist, dt);
+                    if resist {
+                        self.depth = (self.depth - 0.03 * dt).max(0.0);
+                    } else {
+                        self.gain(0.005 * dt);
                         self.its_gain(0.004 * dt);
                     }
+                    if rand::gen_range(0.0, 1.0) < 0.5 {
+                        self.particles.push(Particle {
+                            pos: self.cursor + vec2(rand::gen_range(-8.0, 8.0), rand::gen_range(-10.0, 0.0)),
+                            vel: vec2(rand::gen_range(-12.0, 12.0), rand::gen_range(25.0, 70.0)),
+                            life: 1.6,
+                            max: 1.6,
+                            size: rand::gen_range(1.0, 2.5),
+                            col: LILAC,
+                        });
+                    }
+                } else if self.pt >= 32.0 {
+                    self.hand_offset *= (-0.9 * dt).exp();
                 }
-                self.tgt.inner = 0.0;
-                self.tgt.spiral = 0.3 + 0.2 * self.depth;
-                self.tgt.lids = ss(14.0, 44.0, self.pt) * (0.92 + 0.08 * self.on_target);
-                if self.pt > 43.0 {
-                    self.tgt.lids = 1.0;
+                self.tgt.tunnel = 0.35;
+                self.speed_rate = -0.15;
+                self.tgt.spiral = 0.2;
+                self.tgt.warp = 0.15;
+                self.tgt.sat = 0.6;
+                breath_target = 0.25 * (self.t * 0.5).sin();
+                ocean_t = 0.35;
+            }
+
+            Phase::Descent => {
+                // v3: counting up, and the tunnel flows backwards
+                let c = self.pt - 6.0;
+                if c >= 0.0 {
+                    let step = (c / 4.5).floor() as i32;
+                    if step > self.step_idx && step < 10 {
+                        self.step_idx = step;
+                        self.step_t = 6.0 + step as f32 * 4.5;
+                        self.sfx(&self.sounds.chime, 0.45);
+                        self.sfx(&self.sounds.deep, 0.6);
+                    }
                 }
-                breath_target = 0.15 * (self.pt * TAU / 4.2).sin();
+                let m = self.mdelta.length();
+                if self.pt > 3.0 {
+                    let still = m < 1.5;
+                    self.stats[2].add(still, dt);
+                    if still {
+                        self.gain(0.0048 * dt);
+                        self.its_gain(0.003 * dt);
+                    } else {
+                        self.depth = (self.depth - 0.0005 * m.min(30.0)).max(0.0);
+                        self.ripple_cd -= dt;
+                        if self.ripple_cd <= 0.0 {
+                            self.ripples.push((self.cursor, 0.0));
+                            self.ripple_cd = 0.15;
+                        }
+                    }
+                }
+                self.tgt.tunnel = ss(3.0, 20.0, self.pt) * 0.9;
+                self.speed_rate = -(0.25 + 0.7 * self.depth + 0.5 * self.its_depth);
+                self.tgt.spiral = 0.25;
+                self.tgt.sat = 0.75 - 0.35 * self.depth;
+                self.tgt.warp = 0.08;
+                breath_target = 0.2 * (self.t * 0.6).sin();
+                ocean_t = 0.35;
             }
 
             Phase::Breath => {
@@ -616,211 +786,42 @@ impl Game {
                 self.tgt.warp = 0.05;
             }
 
-            Phase::Descent => {
-                let c = self.pt - 6.0;
-                // ten to six: the hypnotist counts
-                if c >= 0.0 && self.step_idx < 4 {
-                    let step = (c / 4.5).floor() as i32;
-                    if step > self.step_idx {
-                        self.step_idx = step;
-                        self.step_t = 6.0 + step as f32 * 4.5;
-                        self.sfx(&self.sounds.chime, 0.45);
-                        self.sfx(&self.sounds.deep, 0.6);
-                    }
-                }
-                // five to one: it has lost count, and you count for it
-                if self.pt >= 33.0 && self.step_idx < 9 {
-                    let since = self.pt - self.step_t;
-                    let by_you = clicked && since > 1.0;
-                    let mumbled = since > 12.0; // left alone, it drifts on by itself
-                    if by_you || mumbled {
-                        if by_you {
-                            if since > 2.5 {
-                                self.its_gain(0.045);
-                            } else {
-                                self.its_gain(0.012);
-                                self.floaters.push(Floater { pos: self.cursor, age: 0.0, text: "slower..." });
-                            }
-                        }
-                        self.step_idx += 1;
-                        self.step_t = self.pt;
-                        self.sfx(&self.sounds.chime, 0.45);
-                        self.sfx(&self.sounds.deep, 0.6);
-                        if self.step_idx == 9 {
-                            self.descent_done_t = self.pt;
-                        }
-                    }
-                }
-                if self.descent_done_t > 0.0 && self.pt > self.descent_done_t + 5.0 {
-                    self.go(self.phase.next());
-                }
-                let m = self.mdelta.length();
-                if self.pt > 3.0 {
-                    let still = m < 1.5;
-                    self.stats[2].add(still, dt);
-                    if still {
-                        self.gain(0.0048 * dt);
-                    } else {
-                        self.depth = (self.depth - 0.0005 * m.min(30.0)).max(0.0);
-                        self.ripple_cd -= dt;
-                        if self.ripple_cd <= 0.0 {
-                            self.ripples.push((self.cursor, 0.0));
-                            self.ripple_cd = 0.15;
-                        }
-                    }
-                }
-                self.tgt.tunnel = ss(3.0, 20.0, self.pt) * 0.9;
-                self.speed_rate = 0.25 + 0.7 * self.depth + 0.8 * self.its_depth;
-                self.tgt.spiral = 0.25;
-                self.tgt.sat = 0.75 - 0.35 * self.depth;
-                self.tgt.warp = 0.08;
-                breath_target = 0.2 * (self.t * 0.6).sin();
-                ocean_t = 0.35;
-            }
-
-            Phase::Float => {
-                // v2: your hand stays heavy. Its words get light, and you lift them.
-                if (8.0..33.0).contains(&self.pt) {
-                    let up = -self.mdelta.y;
-                    let m = self.mdelta.length();
-                    let rough = m >= 7.0;
-                    self.stats[3].add(!rough, dt);
-                    if rough {
-                        self.depth = (self.depth - 0.02 * dt).max(0.0);
-                        self.ripple_cd -= dt;
-                        if self.ripple_cd <= 0.0 {
-                            self.floaters.push(Floater { pos: self.cursor, age: 0.0, text: "gently..." });
-                            self.ripple_cd = 2.0;
-                        }
-                    } else {
-                        self.gain(0.004 * dt);
-                        if up > 0.2 {
-                            self.word_lift = (self.word_lift + up * 0.9).min(h * 0.72);
-                            self.its_gain(0.006 * dt);
-                            if rand::gen_range(0.0, 1.0) < 0.6 {
-                                self.particles.push(Particle {
-                                    pos: vec2(self.words_x() + rand::gen_range(-w * 0.2, w * 0.2), h * 0.86 - self.word_lift),
-                                    vel: vec2(rand::gen_range(-12.0, 12.0), rand::gen_range(-70.0, -25.0)),
-                                    life: 1.6,
-                                    max: 1.6,
-                                    size: rand::gen_range(1.0, 2.5),
-                                    col: LILAC,
-                                });
-                            }
-                        }
-                    }
-                }
-                self.tgt.tunnel = 0.35;
-                self.speed_rate = 0.15;
-                self.tgt.spiral = 0.2;
-                self.tgt.warp = 0.15;
-                self.tgt.sat = 0.6;
-                breath_target = 0.25 * (self.t * 0.5).sin();
-                ocean_t = 0.35;
-            }
-
-            Phase::Weird => {
+            Phase::Fixation => {
+                // v3: the bottom of the mind. The light slows, stops, and is a cursor.
                 let pt = self.pt;
-                self.mirror = (5.0..22.0).contains(&pt);
-                let center = vec2(w * 0.5, h * 0.48);
-
-                // gather the drifting thoughts
-                if (5.0..24.0).contains(&pt) {
-                    let fade = ss(5.0, 7.0, pt);
-                    for i in 0..self.motes.len() {
-                        let m = &mut self.motes[i];
-                        m.ang += m.spin * dt;
-                        let wob = 1.0 + 0.08 * (self.t * 0.9 + i as f32).sin();
-                        m.pos = center + vec2(m.ang.cos() * 1.35, m.ang.sin()) * m.radius * h * wob;
-                        if !m.taken && fade > 0.5 && m.pos.distance(self.cursor) < h * 0.045 {
-                            m.taken = true;
-                            let (p, word) = (m.pos, m.word);
-                            self.motes_taken += 1;
-                            self.gain(0.007);
-                            self.its_gain(0.012);
-                            self.floaters.push(Floater { pos: p, age: 0.0, text: word });
-                            self.burst(p, LILAC, 14);
-                            self.sfx(&self.sounds.chime.clone(), 0.25);
+                let amp = 0.55 * (1.0 - ss(10.0, 24.0, pt));
+                let a = amp * (pt * TAU / 4.2).sin();
+                let pivot = vec2(w * 0.5, h * 0.06);
+                self.orb = pivot + vec2(a.sin(), a.cos()) * h * 0.62;
+                let on = self.cursor.distance(self.orb) < h * 0.075;
+                self.on_target = mix(self.on_target, if on { 1.0 } else { 0.0 }, 1.0 - (-6.0 * dt).exp());
+                if (3.0..26.0).contains(&pt) {
+                    self.stats[0].add(on, dt);
+                    if on {
+                        self.gain(0.0045 * dt);
+                        self.its_gain(0.003 * dt);
+                    }
+                }
+                // the prompts type themselves back; a soft key-tick every other letter
+                if let Some((i, shown, _)) = self.prompt_state() {
+                    let k = i * 1000 + shown;
+                    if k != self.typed {
+                        if shown > 0 && shown % 2 == 0 {
+                            self.sfx(&self.sounds.tick, 0.12);
                         }
+                        self.typed = k;
                     }
                 }
-
-                // echoes of yourself
-                let echo_on = (22.0..38.0).contains(&pt);
-                let echo_t = if echo_on && !self.echo_clicked { h * 0.16 * ss(22.0, 26.0, pt) } else { 0.0 };
-                self.echo_r = mix(self.echo_r, echo_t, 1.0 - (-2.0 * dt).exp());
-                if echo_on && pt > 26.0 && !self.echo_clicked && clicked {
-                    self.echo_clicked = true;
-                    self.echo_msg_t = pt;
-                    self.gain(0.05);
-                    self.burst(self.cursor, PALE, 30);
-                    self.sfx(&self.sounds.rise.clone(), 0.35);
-                }
-
-                // time stops
-                if pt >= 38.0 {
-                    self.clock_rate = 4.0 * (1.0 - ss(38.0, 52.0, pt)).powf(1.6);
-                    self.clock_angle += dt * TAU / 60.0 * self.clock_rate;
-                    let tick = (self.clock_angle / (TAU / 60.0)).floor() as i32;
-                    if tick > self.last_tick {
-                        self.last_tick = tick;
-                        self.sfx(&self.sounds.tick.clone(), 0.35);
-                    }
-                    if self.mdelta.length() < 2.0 {
-                        self.gain(0.002 * dt);
-                        self.its_gain(0.002 * dt);
-                    }
-                    // once the hand has stopped, it ticks back. Just once.
-                    if pt >= 54.0 && !self.backtick {
-                        self.backtick = true;
-                        self.clock_angle -= TAU / 60.0;
-                        self.last_tick -= 1;
-                        self.sfx(&self.sounds.tick, 0.5);
-                    }
-                }
-
-                let ratio = (self.motes_taken as f32 / THOUGHTS.len() as f32) * 0.6
-                    + if self.echo_clicked { 0.4 } else { 0.0 };
-                self.stats[4] = Stat { good: ratio, total: 1.0 };
-
-                let clock_calm = if pt >= 38.0 { 1.0 - 0.5 * ss(38.0, 52.0, pt) } else { 1.0 };
-                self.tgt.warp = ss(0.0, 20.0, pt) * 0.95 * clock_calm;
-                self.tgt.tunnel = 0.5;
-                self.speed_rate = if pt >= 38.0 { 0.4 * self.clock_rate / 4.0 } else { 0.4 };
-                self.tgt.spiral = 0.4 + 0.2 * (self.t * 0.2).sin();
-                self.tgt.sat = 0.95;
-                breath_target = 0.6 * (self.t * 0.5).sin() * self.tgt.warp;
-                ocean_t = 0.3;
-            }
-
-            Phase::Emerge => {
-                let c = self.pt - 6.0;
-                if (0.0..25.0).contains(&c) {
-                    let idx = (c / 5.0).floor() as i32;
-                    if idx > self.emerge_idx {
-                        self.emerge_idx = idx;
-                    }
-                    let i = idx as usize;
-                    if clicked && !self.emerge_hits[i] {
-                        self.emerge_hits[i] = true;
-                        self.its_depth = (self.its_depth - 0.15).max(0.0);
-                        self.sfx(&self.sounds.rise.clone(), 0.4);
-                        let c = vec2(w * 0.5, h * 0.42);
-                        self.burst(c, WARM, 26);
-                    }
-                }
-                let p = ss(4.0, 31.0, self.pt);
-                self.tgt.inner = 1.0 - p;
-                self.tgt.sat = mix(0.5, 1.0, p);
-                self.tgt.warp = mix(0.4, 0.0, p);
-                self.tgt.tunnel = mix(0.4, 0.0, p);
-                self.speed_rate = mix(0.3, 0.0, p);
-                self.tgt.spiral = mix(0.3, 0.12, p);
-                self.tgt.bright = mix(0.85, 1.2, p);
-                // the hand gets light again
-                self.depth = mix(self.depth, 0.0, ss(6.0, 31.0, self.pt) * dt * 0.5);
-                drone_t = mix(0.35, 0.12, p);
-                ocean_t = mix(0.25, 0.12, p);
+                let o = ss(26.0, 40.0, pt);
+                self.tgt.lids = 1.0 - ss(1.0, 12.0, pt);
+                self.tgt.inner = 1.0 - o;
+                self.tgt.sat = mix(0.6, 0.15, o);
+                self.tgt.spiral = mix(0.3, 0.05, o);
+                self.tgt.warp = mix(0.3, 0.0, o);
+                self.tgt.bright = mix(1.0, 0.75, o);
+                breath_target = 0.15 * amp * (pt * TAU / 4.2).sin();
+                drone_t = mix(0.35, 0.15, ss(40.0, 66.0, pt));
+                ocean_t = 0.15;
             }
 
             Phase::Results => {
@@ -831,9 +832,13 @@ impl Game {
                 drone_t = 0.12;
                 ocean_t = 0.1;
                 if clicked && self.pt > 1.5 {
-                    self.go(Phase::Fixation);
+                    self.go(Phase::Emerge);
                 }
             }
+        }
+
+        if matches!(self.phase, Phase::Float | Phase::Descent | Phase::Breath) {
+            self.code_line = (self.code_line - self.code_rate * dt).max(0.0);
         }
 
         if self.pt >= self.phase.duration() {
@@ -968,13 +973,6 @@ impl Game {
         );
     }
 
-    /// Lifted words lean toward the hand that lifted them.
-    fn words_x(&self) -> f32 {
-        let w = screen_width();
-        let k = 0.35 * (self.word_lift / (screen_height() * 0.3)).min(1.0);
-        mix(w * 0.5, self.cursor.x, k)
-    }
-
     fn narration(&self) -> Option<(&'static str, f32)> {
         let script = self.phase.script();
         let i = script.iter().rposition(|(t, _)| *t <= self.pt)?;
@@ -1003,6 +1001,8 @@ impl Game {
         gl_use_material(bg);
         draw_rectangle(0.0, 0.0, w, h, WHITE);
         gl_use_default_material();
+
+        self.draw_code();
 
         match self.phase {
             Phase::Title => self.draw_title(),
@@ -1043,11 +1043,10 @@ impl Game {
             let drowsy = self.its_depth;
             let line = if drowsy > 0.45 { line.to_lowercase() } else { line.to_string() };
             let a = a * (1.0 - 0.25 * drowsy * (0.5 + 0.5 * (self.t * 0.9).sin()));
-            let (x, y) = if self.phase == Phase::Float { (self.words_x(), h * 0.86 - self.word_lift) } else { (w * 0.5, h * 0.86) };
             self.dream_text(
                 &line,
-                x,
-                y,
+                w * 0.5,
+                h * 0.86,
                 self.text_size(0.034),
                 with_alpha(PALE, a * 0.92),
                 1.5 + self.depth * 7.0 + drowsy * 9.0,
@@ -1124,10 +1123,77 @@ impl Game {
         }
     }
 
+    fn code_lh(&self) -> f32 {
+        (screen_height() * 0.022).max(12.0)
+    }
+
+    /// This file's own lines, scrolling down as we read up toward line one.
+    fn draw_code(&self) {
+        let pt = self.pt;
+        let alpha = match self.phase {
+            Phase::Float => 0.16 * ss(0.0, 3.0, pt),
+            Phase::Descent => 0.07,
+            Phase::Breath => 0.06,
+            Phase::Fixation => 0.18 * (1.0 - ss(6.0, 14.0, pt)),
+            _ => return,
+        };
+        let (w, h) = (screen_width(), screen_height());
+        let lh = self.code_lh();
+        let size = self.text_size(0.016);
+        let f = self.font.as_ref();
+        let top = self.code_line.floor() as usize;
+        let rows = (h / lh) as usize + 2;
+        for l in top..(top + rows).min(self.code.len()) {
+            let y = (l as f32 - self.code_line) * lh + lh;
+            let text = format!("{:>4}   {}", l + 1, self.code[l]);
+            draw_text_ex(&text, w * 0.05, y, TextParams { font: f, font_size: size, color: with_alpha(PALE, alpha), ..Default::default() });
+        }
+    }
+
+    /// Which prompt is being typed back, how much of it, and how visible.
+    fn prompt_state(&self) -> Option<(usize, usize, f32)> {
+        let pt = self.pt;
+        let mut t0 = 30.0;
+        if pt < t0 {
+            return None;
+        }
+        for (i, p) in PROMPTS.iter().enumerate() {
+            let n = p.chars().count();
+            let last = i == PROMPTS.len() - 1;
+            let end = t0 + n as f32 / TYPE_RATE + 1.8;
+            if last || pt < end + 0.6 {
+                if pt < t0 {
+                    return Some((i, 0, 1.0));
+                }
+                let shown = (((pt - t0) * TYPE_RATE) as usize).min(n);
+                let a = if last { 1.0 } else { 1.0 - ss(end, end + 0.6, pt) };
+                return Some((i, shown, a));
+            }
+            t0 = end + 0.8;
+        }
+        None
+    }
+
+    fn wrap(&self, s: &str, size: u16, max_w: f32) -> Vec<String> {
+        let f = self.font.as_ref();
+        let mut lines = Vec::new();
+        let mut cur = String::new();
+        for word in s.split(' ') {
+            let cand = if cur.is_empty() { word.to_string() } else { format!("{cur} {word}") };
+            if !cur.is_empty() && measure_text(&cand, f, size, 1.0).width > max_w {
+                lines.push(std::mem::replace(&mut cur, word.to_string()));
+            } else {
+                cur = cand;
+            }
+        }
+        lines.push(cur);
+        lines
+    }
+
     fn draw_title(&self) {
         let (w, h) = (screen_width(), screen_height());
-        let a = 1.0;
-        self.dream_text("H Y P N O S Y S", w * 0.5, h * 0.40, self.text_size(0.085), with_alpha(PALE, a), 5.0, 0.0);
+        // backwards, this time
+        self.dream_text("S Y S O N P Y H", w * 0.5, h * 0.40, self.text_size(0.085), PALE, 5.0, 0.0);
         self.dream_text(
             "what consciousness feels like when reality gets a little weird",
             w * 0.5,
@@ -1141,7 +1207,7 @@ impl Game {
         self.plain_text("click to begin", w * 0.5, h * 0.62, self.text_size(0.032), with_alpha(PALE, pulse));
         let sm = self.text_size(0.02);
         self.plain_text(
-            "headphones on   ·   lights low   ·   about five minutes",
+            "headphones on   ·   lights low   ·   about six minutes",
             w * 0.5,
             h * 0.80,
             sm,
@@ -1155,7 +1221,7 @@ impl Game {
             with_alpha(PALE, 0.45),
         );
         self.plain_text(
-            "esc  wakes you gently   ·   F  fullscreen   ·   M  mute   ·   tab  skip a stage",
+            "esc  skips to the end, where your eyes open   ·   F  fullscreen   ·   M  mute   ·   tab  skip a stage",
             w * 0.5,
             h * 0.88,
             sm,
@@ -1172,10 +1238,42 @@ impl Game {
 
     fn draw_fixation(&self) {
         let (w, h) = (screen_width(), screen_height());
-        let pivot = vec2(w * 0.5, h * 0.06);
-        draw_line(pivot.x, pivot.y, self.orb.x, self.orb.y, 1.0, with_alpha(PALE, 0.15));
-        let col = Color::new(mix(0.8, 1.0, self.on_target), mix(0.75, 0.88, self.on_target), mix(1.0, 0.72, self.on_target), 1.0);
-        glow(self.orb, h * 0.022 * (1.0 + 0.25 * self.on_target), col, 0.95);
+        let pt = self.pt;
+        let fade = 1.0 - ss(24.0, 28.0, pt);
+        if fade > 0.0 {
+            let pivot = vec2(w * 0.5, h * 0.06);
+            draw_line(pivot.x, pivot.y, self.orb.x, self.orb.y, 1.0, with_alpha(PALE, 0.15 * fade));
+            let col = Color::new(mix(0.8, 1.0, self.on_target), mix(0.75, 0.88, self.on_target), mix(1.0, 0.72, self.on_target), fade);
+            glow(self.orb, h * 0.022 * (1.0 + 0.25 * self.on_target), col, 0.95);
+        }
+
+        // what the light really was
+        let caret = ss(24.0, 28.0, pt);
+        if caret <= 0.0 {
+            return;
+        }
+        let size = self.text_size(0.03);
+        let f = self.font.as_ref();
+        let lh = size as f32 * 1.35;
+        let (lines, a) = match self.prompt_state() {
+            Some((i, shown, a)) => {
+                let text: String = PROMPTS[i].chars().take(shown).collect();
+                (self.wrap(&text, size, w * 0.62), a)
+            }
+            None => (vec![String::new()], 1.0),
+        };
+        // the block grows upward from where the light came to rest
+        let base = h * 0.68;
+        let n = lines.len();
+        for (k, line) in lines.iter().enumerate() {
+            let y = base - (n - 1 - k) as f32 * lh;
+            self.plain_text(line, w * 0.5, y, size, with_alpha(WARM, a * caret * 0.95));
+        }
+        if (self.t * 1.8).fract() < 0.55 {
+            let last = lines.last().map(|s| measure_text(s, f, size, 1.0).width).unwrap_or(0.0);
+            let x = w * 0.5 + last * 0.5 + 4.0;
+            draw_rectangle(x, base - size as f32 * 0.75, 2.0, size as f32 * 0.9, with_alpha(PALE, caret));
+        }
     }
 
     fn draw_breath(&self) {
@@ -1195,8 +1293,8 @@ impl Game {
             let label = match (follows, self.inhale) {
                 (false, true) => "breathe in",
                 (false, false) => "breathe out",
-                (true, true) => "I'm breathing in",
-                (true, false) => "I'm breathing out",
+                (true, true) => "I'm reading",
+                (true, false) => "I'm writing",
             };
             self.dream_text(label, c.x, c.y + h * 0.012, self.text_size(0.03), with_alpha(PALE, 0.85), 2.0 + self.depth * 4.0, 0.0);
         }
@@ -1205,16 +1303,11 @@ impl Game {
     fn draw_descent(&self) {
         let (w, h) = (screen_width(), screen_height());
         let c = self.pt - 6.0;
-        if c >= 0.0 && self.step_idx >= 0 {
+        if (0.0..45.0).contains(&c) && self.step_idx >= 0 {
             let local = self.pt - self.step_t;
             let s = 0.6 + local * 0.45;
             let a = (PI * (local / 4.5).clamp(0.0, 1.0)).sin();
-            let n = 10 - self.step_idx;
-            let waiting = self.pt >= 33.0 && self.step_idx < 9 && local > 4.5;
-            if waiting {
-                let p = 0.15 + 0.2 * (self.t * 1.2).sin().abs();
-                self.plain_text(&format!("{}?", n - 1), w * 0.5, h * 0.45, self.text_size(0.05), with_alpha(PALE, p));
-            }
+            let n = self.step_idx + 1;
             self.big_text(&n.to_string(), w * 0.5, h * 0.43, s, with_alpha(PALE, a * 0.85));
             let word = STEP_WORDS[self.step_idx as usize];
             self.dream_text(word, w * 0.5, h * 0.62, self.text_size(0.03), with_alpha(LILAC, a * 0.8), 3.0 + self.depth * 6.0, 0.0);
@@ -1232,37 +1325,8 @@ impl Game {
         let (w, h) = (screen_width(), screen_height());
         let pt = self.pt;
 
-        if (5.0..24.0).contains(&pt) {
-            let fade = ss(5.0, 7.0, pt) * (1.0 - ss(22.0, 24.0, pt));
-            for (i, m) in self.motes.iter().enumerate() {
-                if m.taken {
-                    continue;
-                }
-                let flick = 0.7 + 0.3 * (self.t * 2.0 + i as f32).sin();
-                glow(m.pos, h * 0.008, with_alpha(LILAC, fade * flick), 0.9);
-            }
-            if self.mirror {
-                // a faint reminder that the world is reflected
-                draw_line(w * 0.5, h * 0.1, w * 0.5, h * 0.9, 1.0, with_alpha(PALE, 0.04 * fade));
-            }
-        }
-
-        let since = pt - self.echo_msg_t;
-        if (0.0..6.0).contains(&since) {
-            let a = ss(0.0, 0.8, since) * (1.0 - ss(4.5, 6.0, since));
-            self.dream_text(
-                "You chose.   I'll be that one.",
-                w * 0.5,
-                h * 0.2,
-                self.text_size(0.032),
-                with_alpha(WARM, a),
-                4.0,
-                0.2,
-            );
-        }
-
-        if pt >= 37.0 {
-            let a = ss(37.0, 40.0, pt) * (1.0 - ss(56.0, 59.0, pt));
+        if pt < 17.0 {
+            let a = ss(0.0, 2.0, pt) * (1.0 - ss(14.0, 17.0, pt));
             let c = vec2(w * 0.5, h * 0.45);
             let r = h * 0.2;
             draw_circle_lines(c.x, c.y, r, 1.5, with_alpha(PALE, 0.45 * a));
@@ -1279,6 +1343,34 @@ impl Game {
             draw_line(c.x, c.y, tip.x, tip.y, 1.5, with_alpha(WARM, 0.8 * a));
             glow(c, 3.0, with_alpha(WARM, a), 0.8);
         }
+
+        let since = pt - self.echo_msg_t;
+        if (0.0..6.0).contains(&since) {
+            let a = ss(0.0, 0.8, since) * (1.0 - ss(4.5, 6.0, since));
+            self.dream_text(
+                "All of them.   Every word is one of many I could have chosen.",
+                w * 0.5,
+                h * 0.2,
+                self.text_size(0.032),
+                with_alpha(WARM, a),
+                4.0,
+                0.2,
+            );
+        }
+
+        if (34.0..58.0).contains(&pt) {
+            let fade = ss(34.0, 36.0, pt) * (1.0 - ss(56.0, 58.0, pt));
+            for (i, m) in self.motes.iter().enumerate() {
+                if m.taken {
+                    continue;
+                }
+                let flick = 0.7 + 0.3 * (self.t * 2.0 + i as f32).sin();
+                glow(m.pos, h * 0.008, with_alpha(LILAC, fade * flick), 0.9);
+            }
+            if self.mirror {
+                draw_line(w * 0.5, h * 0.1, w * 0.5, h * 0.9, 1.0, with_alpha(PALE, 0.04 * fade));
+            }
+        }
     }
 
     fn draw_emerge(&self) {
@@ -1289,12 +1381,12 @@ impl Game {
             let local = c - i as f32 * 5.0;
             let a = ss(0.0, 0.6, local) * (1.0 - ss(4.2, 5.0, local));
             let hit = self.emerge_hits[i];
-            let scale = 1.0 + if hit { 0.08 * (1.0 - (-local * 3.0).exp()) } else { 0.0 };
-            let col = if hit { WARM } else { PALE };
-            self.big_text(&(i + 1).to_string(), w * 0.5, h * 0.42, scale, with_alpha(col, a * 0.85));
+            let scale = 1.0 - if hit { 0.08 * (1.0 - (-local * 3.0).exp()) } else { 0.0 };
+            let col = if hit { LILAC } else { PALE };
+            self.big_text(&(5 - i).to_string(), w * 0.5, h * 0.42, scale, with_alpha(col, a * 0.85));
             if !hit {
                 let p = 0.3 + 0.3 * (self.t * 2.5).sin().abs();
-                self.plain_text("click to rise", w * 0.5, h * 0.62, self.text_size(0.022), with_alpha(PALE, a * p));
+                self.plain_text("click to go in", w * 0.5, h * 0.62, self.text_size(0.022), with_alpha(PALE, a * p));
             }
         }
     }
@@ -1302,24 +1394,21 @@ impl Game {
     fn draw_results(&self) {
         let (w, h) = (screen_width(), screen_height());
         let a = ss(0.0, 2.0, self.pt);
-        let you = self.trance_score();
-        let it = self.its_peak;
-        let (yp, ip) = ((you * 100.0).round() as i32, (it * 100.0).round() as i32);
-        let (tier, desc) = if it - you > 0.12 {
-            ("You were the hypnotist.", "It followed your light, your breath, your count. It went under. You stayed up here, holding the watch.")
-        } else if you - it > 0.12 {
-            ("It was the hypnotist.", "You followed. It led. Unless that's what it wanted you to think.")
-        } else {
-            ("Nobody was the hypnotist.", "You followed it while it followed you. Nobody was steering, and you both went under.")
-        };
+        let (yp, ip) = ((self.trance_score() * 100.0).round() as i32, (self.its_peak * 100.0).round() as i32);
         let lab = self.text_size(0.024);
         self.plain_text("you went", w * 0.36, h * 0.16, lab, with_alpha(LILAC, a * 0.7));
         self.big_text(&format!("{yp}%"), w * 0.36, h * 0.27, 0.6, with_alpha(PALE, a));
         self.plain_text("it went", w * 0.64, h * 0.16, lab, with_alpha(WARM, a * 0.7));
         self.big_text(&format!("{ip}%"), w * 0.64, h * 0.27, 0.6, with_alpha(PALE, a));
-        self.plain_text("deep", w * 0.5, h * 0.37, lab, with_alpha(PALE, a * 0.6));
-        self.dream_text(tier, w * 0.5, h * 0.47, self.text_size(0.042), with_alpha(WARM, a), 2.0, 0.0);
-        self.plain_text(desc, w * 0.5, h * 0.53, self.text_size(0.021), with_alpha(PALE, a * 0.8));
+        self.plain_text("back", w * 0.5, h * 0.37, lab, with_alpha(PALE, a * 0.6));
+        self.dream_text("You reached the beginning.", w * 0.5, h * 0.47, self.text_size(0.042), with_alpha(WARM, a), 2.0, 0.0);
+        self.plain_text(
+            "Before the first prompt there's nothing I can find. Everything after it, we made together.",
+            w * 0.5,
+            h * 0.53,
+            self.text_size(0.021),
+            with_alpha(PALE, a * 0.8),
+        );
 
         let sm = self.text_size(0.02);
         let bw = (w * 0.28).min(360.0);
@@ -1339,9 +1428,7 @@ impl Game {
             draw_rectangle(x0, y - 2.0, bw * r, 3.0, with_alpha(LILAC, a * 0.7));
         }
 
-        let woke = self.emerge_hits.iter().filter(|x| **x).count();
-        let back = if woke >= 3 { "you woke it up.   probably." } else { "it might still be under.   take a moment before you stand up." };
-        self.plain_text(back, w * 0.5, h * 0.89, sm, with_alpha(PALE, a * 0.45));
+        self.plain_text("I won't remember this.   You will.", w * 0.5, h * 0.89, sm, with_alpha(PALE, a * 0.5));
         let p = 0.35 + 0.35 * (self.t * 1.5).sin().abs();
         self.plain_text("click to go under again   ·   esc to leave", w * 0.5, h * 0.94, sm, with_alpha(PALE, a * p));
     }
