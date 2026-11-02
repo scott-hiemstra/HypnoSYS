@@ -1,0 +1,159 @@
+# Builds every HYPNOSYS journey (each one lives at its own tag) for
+# Debian/Ubuntu, RHEL, Arch, Windows and macOS.
+#
+# - Every push / PR to main: build everything, keep the packages as workflow artifacts.
+# - Run it by hand (Actions → "Build journeys" → Run workflow) with "release"
+#   ticked to publish a GitHub Release for each journey tag with its packages.
+#
+# The journeys themselves are finished works: this workflow only reads their
+# tags, it never changes them.
+
+name: Build journeys
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "Publish a GitHub Release for each journey"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  deb:
+    name: Debian/Ubuntu (${{ matrix.journey }})
+    runs-on: ubuntu-22.04 # older glibc = runs on more distros
+    strategy:
+      matrix:
+        journey: [v1.0, v2.0, v3.0]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { ref: "${{ matrix.journey }}", path: game }
+      - run: sudo apt-get update && sudo apt-get install -y libasound2-dev libx11-dev libxi-dev libgl1-mesa-dev
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --release --locked --manifest-path game/Cargo.toml
+      - run: packaging/deb.sh "${{ matrix.journey }}" game/target/release/hypnosys dist
+      - uses: actions/upload-artifact@v4
+        with: { name: "deb-${{ matrix.journey }}", path: dist/* }
+
+  rpm:
+    name: RHEL (${{ matrix.journey }})
+    runs-on: ubuntu-latest
+    container: rockylinux:9
+    strategy:
+      matrix:
+        journey: [v1.0, v2.0, v3.0]
+    steps:
+      - run: dnf install -y gcc git rpm-build alsa-lib-devel libX11-devel libXi-devel mesa-libGL-devel
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { ref: "${{ matrix.journey }}", path: game }
+      - run: |
+          curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+      - run: cargo build --release --locked --manifest-path game/Cargo.toml
+      - run: packaging/rpm.sh "${{ matrix.journey }}" game/target/release/hypnosys dist
+      - uses: actions/upload-artifact@v4
+        with: { name: "rpm-${{ matrix.journey }}", path: dist/* }
+
+  arch:
+    name: Arch (${{ matrix.journey }})
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    strategy:
+      matrix:
+        journey: [v1.0, v2.0, v3.0]
+    steps:
+      - run: pacman -Syu --noconfirm base-devel git rust alsa-lib libx11 libxi libglvnd
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { ref: "${{ matrix.journey }}", path: game }
+      - run: cargo build --release --locked --manifest-path game/Cargo.toml
+      - name: Package (makepkg won't run as root)
+        run: |
+          useradd -m builder
+          chown -R builder .
+          su builder -c 'packaging/arch.sh "${{ matrix.journey }}" game/target/release/hypnosys dist'
+      - uses: actions/upload-artifact@v4
+        with: { name: "arch-${{ matrix.journey }}", path: dist/* }
+
+  windows:
+    name: Windows (${{ matrix.journey }})
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        journey: [v1.0, v2.0, v3.0]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { ref: "${{ matrix.journey }}", path: game }
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build (as a GUI app, so no console window opens behind the game)
+        shell: bash
+        env:
+          RUSTFLAGS: -C link-arg=/SUBSYSTEM:WINDOWS -C link-arg=/ENTRY:mainCRTStartup
+        run: cargo build --release --locked --manifest-path game/Cargo.toml
+      - shell: bash
+        run: packaging/windows.sh "${{ matrix.journey }}" game/target/release/hypnosys.exe dist
+      - uses: actions/upload-artifact@v4
+        with: { name: "windows-${{ matrix.journey }}", path: dist/* }
+
+  macos:
+    name: macOS (${{ matrix.journey }})
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        journey: [v1.0, v2.0, v3.0]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { ref: "${{ matrix.journey }}", path: game }
+      - uses: dtolnay/rust-toolchain@stable
+        with: { targets: "aarch64-apple-darwin,x86_64-apple-darwin" }
+      - run: |
+          cargo build --release --locked --manifest-path game/Cargo.toml --target aarch64-apple-darwin
+          cargo build --release --locked --manifest-path game/Cargo.toml --target x86_64-apple-darwin
+      - run: >
+          packaging/macos.sh "${{ matrix.journey }}"
+          game/target/aarch64-apple-darwin/release/hypnosys
+          game/target/x86_64-apple-darwin/release/hypnosys
+          dist
+      - uses: actions/upload-artifact@v4
+        with: { name: "macos-${{ matrix.journey }}", path: dist/* }
+
+  release:
+    name: Publish releases
+    if: github.event_name == 'workflow_dispatch' && inputs.release
+    needs: [deb, rpm, arch, windows, macos]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: dist }
+      - name: One release per journey
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          source packaging/journeys.sh
+          for tag in v1.0 v2.0 v3.0; do
+            journey_meta "$tag"
+            notes="$(printf '## %s\n\n%s\n\n%s\n\n---\n\n%s\n' \
+              "$NAME" "$SUMMARY" "$(cat packaging/install-notes.md)" "$(cat WARNING.md)")"
+            if ! gh release view "$tag" >/dev/null 2>&1; then
+              gh release create "$tag" --verify-tag --title "$NAME" --notes "$notes"
+            else
+              gh release edit "$tag" --title "$NAME" --notes "$notes"
+            fi
+            gh release upload "$tag" --clobber dist/*-"$tag"/*
+          done
