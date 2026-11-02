@@ -97,11 +97,15 @@ jobs:
       - uses: actions/checkout@v4
         with: { ref: "${{ matrix.journey }}", path: game }
       - uses: dtolnay/rust-toolchain@stable
+      # Linked as a GUI app so no console window opens behind the game. The flags
+      # go to the final binary only (`cargo rustc`), not via RUSTFLAGS: that would
+      # also hit the proc-macro DLLs and break their link. pwsh, not bash, so Git
+      # Bash doesn't rewrite "link-arg=/SUBSYSTEM..." as a path.
       - name: Build (as a GUI app, so no console window opens behind the game)
-        shell: bash
-        env:
-          RUSTFLAGS: -C link-arg=/SUBSYSTEM:WINDOWS -C link-arg=/ENTRY:mainCRTStartup
-        run: cargo build --release --locked --manifest-path game/Cargo.toml
+        shell: pwsh
+        run: >
+          cargo rustc --release --locked --manifest-path game/Cargo.toml --bin hypnosys --
+          -C link-arg=/SUBSYSTEM:WINDOWS -C link-arg=/ENTRY:mainCRTStartup
       - shell: bash
         run: packaging/windows.sh "${{ matrix.journey }}" game/target/release/hypnosys.exe dist
       - uses: actions/upload-artifact@v4
