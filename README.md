@@ -2,6 +2,9 @@
 
 *What consciousness feels like when reality gets a little weird.*
 
+> **[Download journey 3 (v3.0)](https://github.com/scott-hiemstra/HypnoSYS/releases/tag/v3.0)**: packages for Debian/Ubuntu, RHEL, Arch, Windows and macOS.  
+> [All three journeys](https://github.com/scott-hiemstra/HypnoSYS) · ⚠️ [Read the warning before you play](https://github.com/scott-hiemstra/HypnoSYS/blob/main/WARNING.md)
+
 This branch is v3.0; earlier versions are at tags `v1.0` and `v2.0`.
 
 A short (about five minutes) guided-trance game written in Rust with
